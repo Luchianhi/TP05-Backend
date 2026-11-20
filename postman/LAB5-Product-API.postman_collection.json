@@ -1,0 +1,194 @@
+{
+  "info": {
+    "_postman_id": "5b0f2a3e-6c1d-4e8a-9f27-1a2b3c4d5e05",
+    "name": "LAB5 - Product API",
+    "description": "Tests des 6 requêtes de l'étape 19 du LAB 5 (API REST CRUD Node.js / Express).\n\nAvant de lancer la série : démarrer le serveur avec `npm run dev` (redémarrer pour repartir des 3 produits de départ), puis exécuter les requêtes dans l'ordre 1 → 6.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. GET Liste",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        },
+        "description": "Liste tous les produits. Attendu : 200 OK, count = 3."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Statut 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. POST Création",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Tapis\",\"price\":10,\"stock\":5}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        },
+        "description": "Crée le produit Tapis. Attendu : 201 Created, id = 4."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Statut 201 Created', () => pm.response.to.have.status(201));",
+              "pm.test('Produit Tapis créé', () => pm.expect(pm.response.json().data.name).to.eql('Tapis'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. PUT Mise à jour",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Clavier Gamer\",\"price\":80,\"stock\":10}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "1"]
+        },
+        "description": "Remplace entièrement le produit 1. Attendu : 200 OK."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Statut 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('Nom = Clavier Gamer', () => pm.expect(pm.response.json().data.name).to.eql('Clavier Gamer'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. PATCH Mise à jour partielle",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"stock\":20}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "1"]
+        },
+        "description": "Modifie uniquement le stock du produit 1. Attendu : 200 OK, stock = 20."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Statut 200 OK', () => pm.response.to.have.status(200));",
+              "pm.test('Stock = 20', () => pm.expect(pm.response.json().data.stock).to.eql(20));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. DELETE Suppression",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/products/3",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products", "3"]
+        },
+        "description": "Supprime le produit 3. Attendu : 204 No Content (corps vide)."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Statut 204 No Content', () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Corps invalide",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"\",\"price\":-1}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/products",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "products"]
+        },
+        "description": "Données invalides. Attendu : 400 Bad Request avec 3 erreurs de validation."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Statut 400 Bad Request', () => pm.response.to.have.status(400));",
+              "pm.test('3 erreurs de validation', () => pm.expect(pm.response.json().errors).to.have.lengthOf(3));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
